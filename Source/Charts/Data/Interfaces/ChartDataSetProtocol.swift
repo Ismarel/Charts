@@ -169,6 +169,11 @@ public protocol ChartDataSetProtocol
     /// The label string that describes the DataSet.
     var label: String? { get }
     
+    //ADD for enlight-->
+    var isTexture: String? { get }
+    var isSingleTexture: String? { get }
+    //</enlight>-->
+    
     /// The axis this DataSet should be plotted against.
     var axisDependency: YAxis.AxisDependency { get }
     
@@ -178,16 +183,20 @@ public protocol ChartDataSetProtocol
     /// All the colors that are used for this DataSet.
     /// Colors are reused as soon as the number of Entries the DataSet represents is higher than the size of the colors array.
     var colors: [NSUIColor] { get }
+    //var textures: [CGGradient] { get }
     
     /// - Returns: The color at the given index of the DataSet's color array.
     /// This prevents out-of-bounds by performing a modulus on the color index, so colours will repeat themselves.
     func color(atIndex: Int) -> NSUIColor
-    
+    func texture(atIndex: Int) -> CGGradient //ADD for enlight-->
     func resetColors()
+    func resetTextures()//ADD for enlight-->
     
     func addColor(_ color: NSUIColor)
     
     func setColor(_ color: NSUIColor)
+    //func addTexture(_ texture: CGGradient)
+    //func setTexture(_ texture: CGGradient)
     
     /// if true, value highlighting is enabled
     var highlightEnabled: Bool { get set }
@@ -246,6 +255,8 @@ public protocol ChartDataSetProtocol
     
     /// `true` if y-value drawing is enabled, `false` ifnot
     var isDrawValuesEnabled: Bool { get }
+    
+    var isDrawDashedLineEnabled: Bool { get }//ADD for enlight-->
     
     /// Set this to true to draw y-icons on the chart
     ///

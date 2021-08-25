@@ -34,7 +34,15 @@ open class BarChartDataSet: BarLineScatterCandleBubbleChartDataSet, BarChartData
         super.init(entries: entries, label: label)
         initialize()
     }
-
+    
+    //ADD for enlight-->
+    public override init(entries: [ChartDataEntry], label: String?, isTexture: String?)
+    {
+        super.init(entries: entries, label: label, isTexture: isTexture)
+        initialize()
+    }
+    //</enlight>-->
+    
     // MARK: - Data functions and accessors
     
     /// the maximum number of bars that are stacked upon each other, this value
@@ -64,8 +72,8 @@ open class BarChartDataSet: BarLineScatterCandleBubbleChartDataSet, BarChartData
     open override func calcMinMax(entry e: ChartDataEntry)
     {
         guard let e = e as? BarChartDataEntry,
-            !e.y.isNaN
-            else { return }
+              !e.y.isNaN
+        else { return }
         
         if e.yValues == nil
         {
@@ -77,7 +85,7 @@ open class BarChartDataSet: BarLineScatterCandleBubbleChartDataSet, BarChartData
             _yMin = Swift.min(-e.negativeSum, _yMin)
             _yMax = Swift.max(e.positiveSum, _yMax)
         }
-
+        
         calcMinMaxX(entry: e)
     }
     
@@ -106,13 +114,13 @@ open class BarChartDataSet: BarLineScatterCandleBubbleChartDataSet, BarChartData
     
     /// the color used for drawing the bar-shadows. The bar shadows is a surface behind the bar that indicates the maximum value
     open var barShadowColor = NSUIColor(red: 215.0/255.0, green: 215.0/255.0, blue: 215.0/255.0, alpha: 1.0)
-
+    
     /// the width used for drawing borders around the bars. If borderWidth == 0, no border will be drawn.
     open var barBorderWidth : CGFloat = 0.0
-
+    
     /// the color drawing borders around the bars.
     open var barBorderColor = NSUIColor.black
-
+    
     /// the alpha value (transparency) that is used for drawing the highlight indicator bar. min = 0.0 (fully transparent), max = 1.0 (fully opaque)
     open var highlightAlpha = CGFloat(120.0 / 255.0)
     
@@ -124,7 +132,7 @@ open class BarChartDataSet: BarLineScatterCandleBubbleChartDataSet, BarChartData
         copy._stackSize = _stackSize
         copy._entryCountStacks = _entryCountStacks
         copy.stackLabels = stackLabels
-
+        
         copy.barShadowColor = barShadowColor
         copy.barBorderWidth = barBorderWidth
         copy.barBorderColor = barBorderColor

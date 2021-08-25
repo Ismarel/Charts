@@ -123,7 +123,7 @@ extension CGContext
     {
         var drawOffset = CGPoint()
         drawOffset.x = center.x - (size.width / 2)
-        drawOffset.y = center.y - (size.height / 2)
+        drawOffset.y = center.y - (size.height / 2) + 50
 
         NSUIGraphicsPushContext(self)
 

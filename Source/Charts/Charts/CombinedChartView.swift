@@ -86,7 +86,7 @@ open class CombinedChartView: BarLineChartViewBase, CombinedChartDataProvider
         }
         
         guard let h = self.highlighter?.getHighlight(x: pt.x, y: pt.y)
-            else { return nil }
+        else { return nil }
         
         if !isHighlightFullBarEnabled { return h }
         
@@ -99,6 +99,37 @@ open class CombinedChartView: BarLineChartViewBase, CombinedChartDataProvider
             stackIndex: -1,
             axis: h.axis)
     }
+    
+    //ADD for enlight-->
+    /// - returns: The bounding box of the specified Entry in the specified DataSet. Returns null if the Entry could not be found in the charts data.
+    open func getBarBounds(entry e: BarChartDataEntry) -> CGRect
+    {
+        //guard let
+                //data = _data as? BarChartData,
+              //let set = data.getDataSetForEntry(e) as? IBarChartDataSet
+        
+        guard let d = self.data as? BarChartData,
+              let set = d.getDataSetForEntry(e) as? BarChartDataSet
+        
+        else { return CGRect.null }
+        
+        let y = e.y
+        let x = e.x
+        
+        let barWidth = d.barWidth
+        
+        let left = x - barWidth / 2.0
+        let right = x + barWidth / 2.0
+        let top = y >= 0.0 ? y : 0.0
+        let bottom = y <= 0.0 ? y : 0.0
+        
+        var bounds = CGRect(x: left, y: top, width: Double(right - left), height: bottom - top)
+        
+        getTransformer(forAxis: set.axisDependency).rectValueToPixel(&bounds)
+        
+        return bounds
+    }
+    //</enlight>-->
     
     // MARK: - CombinedChartDataProvider
     
@@ -164,7 +195,7 @@ open class CombinedChartView: BarLineChartViewBase, CombinedChartDataProvider
     
     /// if set to true, all values are drawn above their bars, instead of below their top
     @objc open var drawValueAboveBarEnabled: Bool
-        {
+    {
         get { return (renderer as! CombinedChartRenderer).drawValueAboveBarEnabled }
         set { (renderer as! CombinedChartRenderer).drawValueAboveBarEnabled = newValue }
     }
@@ -211,7 +242,7 @@ open class CombinedChartView: BarLineChartViewBase, CombinedChartDataProvider
         guard
             let marker = marker, 
             isDrawMarkersEnabled && valuesToHighlight()
-            else { return }
+        else { return }
         
         for i in highlighted.indices
         {
@@ -220,7 +251,7 @@ open class CombinedChartView: BarLineChartViewBase, CombinedChartDataProvider
             guard 
                 let set = combinedData?.getDataSetByHighlight(highlight),
                 let e = data?.entry(for: highlight)
-                else { continue }
+            else { continue }
             
             let entryIndex = set.entryIndex(entry: e)
             if entryIndex > Int(Double(set.entryCount) * chartAnimator.phaseX)

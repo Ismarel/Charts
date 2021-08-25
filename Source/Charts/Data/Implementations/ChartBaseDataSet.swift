@@ -15,26 +15,84 @@ import CoreGraphics
 
 open class ChartBaseDataSet: NSObject, ChartDataSetProtocol, NSCopying
 {
+    //ADD for enlight-->
+    public var isSingleTexture: String?
+    
+    public var isTexture: String?
+    public var valueTextures: [CGGradient]!
+    open var textures: [CGGradient]!
+    //</enlight>-->
     public required override init()
     {
         super.init()
+        //ADD for enlight-->
+        valueTextures = [CGGradient]()
+        textures = [CGGradient]()
+        //</enlight>-->
         
         // default color
         colors.append(NSUIColor(red: 140.0/255.0, green: 234.0/255.0, blue: 255.0/255.0, alpha: 1.0))
         valueColors.append(.labelOrBlack)
+        
+        //ADD for enlight-->
+        let fillColors = [hexStringToUIColor(hex: "#FFFFFF").cgColor, hexStringToUIColor(hex: "#FFE361").cgColor]
+        let locations:[CGFloat] = [0.0, 1.0]
+        
+        let gradient:CGGradient
+        let colorspace:CGColorSpace
+        colorspace = CGColorSpaceCreateDeviceRGB()
+        
+        gradient = CGGradient(colorsSpace: colorspace, colors: fillColors as CFArray, locations: locations)!
+        textures.append(gradient)
+        //</enlight>-->
     }
     
     @objc public init(label: String)
     {
         super.init()
+        //ADD for enlight-->
+        valueTextures = [CGGradient]()
+        textures = [CGGradient]()
+        //</enlight>-->
         
         // default color
         colors.append(NSUIColor(red: 140.0/255.0, green: 234.0/255.0, blue: 255.0/255.0, alpha: 1.0))
         valueColors.append(.labelOrBlack)
         
+        //ADD for enlight-->
+        let fillColors = [hexStringToUIColor(hex: "#FFFFFF").cgColor, hexStringToUIColor(hex: "#FFE361").cgColor]
+        let locations:[CGFloat] = [0.0, 1.0]
+        
+        let gradient:CGGradient
+        let colorspace:CGColorSpace
+        colorspace = CGColorSpaceCreateDeviceRGB()
+        
+        gradient = CGGradient(colorsSpace: colorspace, colors: fillColors as CFArray, locations: locations)!
+        textures.append(gradient)
+        //</enlight>-->
+        
         self.label = label
     }
     
+    //ADD for enlight-->
+    public init(label: String?, isTexture: String?)
+    {
+        super.init()
+        valueTextures = [CGGradient]()
+        textures = [CGGradient]()
+        self.isTexture = isTexture
+        // default texture
+        let fillColors = [hexStringToUIColor(hex: "#FFFFFF").cgColor, hexStringToUIColor(hex: "#FFE361").cgColor]
+        let locations:[CGFloat] = [0.0, 1.0]
+        
+        let gradient:CGGradient
+        let colorspace:CGColorSpace
+        colorspace = CGColorSpaceCreateDeviceRGB()
+        
+        gradient = CGGradient(colorsSpace: colorspace, colors: fillColors as CFArray, locations: locations)!
+        textures.append(gradient)
+    }
+    //</enlight>-->
     // MARK: - Data functions and accessors
     
     /// Use this method to tell the data set that the underlying data has changed
@@ -77,7 +135,7 @@ open class ChartBaseDataSet: NSObject, ChartDataSetProtocol, NSCopying
     {
         fatalError("entryCount is not implemented in ChartBaseDataSet")
     }
-        
+    
     open func entryForIndex(_ i: Int) -> ChartDataEntry?
     {
         fatalError("entryForIndex is not implemented in ChartBaseDataSet")
@@ -191,7 +249,7 @@ open class ChartBaseDataSet: NSObject, ChartDataSetProtocol, NSCopying
     
     /// List representing all colors that are used for drawing the actual values for this DataSet
     open var valueColors = [NSUIColor]()
-
+    
     /// The label string that describes the DataSet.
     open var label: String? = "DataSet"
     
@@ -266,15 +324,51 @@ open class ChartBaseDataSet: NSObject, ChartDataSetProtocol, NSCopying
         self.colors = colors
     }
     
+    //ADD for enlight-->
+    //Method for apply textures
+    
+    public func texture(atIndex index: Int) -> CGGradient {
+        var index = index
+        if index < 0
+        {
+            index = 0
+        }
+        return textures[index % textures.count]
+    }
+    
+    public func resetTextures() {
+        textures.removeAll()
+    }
+    
+    public func addTexture(_ texture: CGGradient) {
+        textures.append(texture)
+        if textures.count == 1{
+            self.isSingleTexture = "true"
+        }else{
+            self.isSingleTexture = "false"
+        }
+    }
+    
+    public func setTexture(_ texture: CGGradient) {
+        textures.removeAll()
+        textures.append(texture)
+        if textures.count == 1{
+            self.isSingleTexture = "true"
+        }else{
+            self.isSingleTexture = "false"
+        }
+    }
+    //</enlight>-->
+    
     /// if true, value highlighting is enabled
     open var highlightEnabled = true
     
     /// `true` if value highlighting is enabled for this dataset
     open var isHighlightEnabled: Bool { return highlightEnabled }
-        
+    
     /// Custom formatter that is used instead of the auto-formatter if set
     open lazy var valueFormatter: ValueFormatter = DefaultValueFormatter()
-
+    
     /// Sets/get a single color for value text.
     /// Setting the color clears the colors array and adds a single color.
     /// Getting will return the first color in the array.
@@ -343,7 +437,14 @@ open class ChartBaseDataSet: NSObject, ChartDataSetProtocol, NSCopying
     {
         return drawValuesEnabled
     }
-
+    //ADD for enlight-->
+    open var drawDashedLineEnabled = false
+    open var isDrawDashedLineEnabled: Bool
+    {
+        return drawDashedLineEnabled
+    }
+    //</enlight>-->
+    
     /// Set this to true to draw y-icons on the chart.
     ///
     /// - Note: For bar and line charts: if `maxVisibleCount` is reached, no icons will be drawn even if this is enabled.
@@ -410,4 +511,29 @@ open class ChartBaseDataSet: NSObject, ChartDataSetProtocol, NSCopying
         
         return copy
     }
+    
+    //ADD for enlight-->
+    func hexStringToUIColor (hex:String) -> NSUIColor {
+        var cString:String = hex.trimmingCharacters(in: .whitespacesAndNewlines).uppercased()
+        
+        if (cString.hasPrefix("#")) {
+            cString.remove(at: cString.startIndex)
+        }
+        
+        if ((cString.count) != 6) {
+            return NSUIColor.gray
+        }
+        
+        var rgbValue:UInt32 = 0
+        Scanner(string: cString).scanHexInt32(&rgbValue)
+        
+        return NSUIColor(
+            red: CGFloat((rgbValue & 0xFF0000) >> 16) / 255.0,
+            green: CGFloat((rgbValue & 0x00FF00) >> 8) / 255.0,
+            blue: CGFloat(rgbValue & 0x0000FF) / 255.0,
+            alpha: CGFloat(1.0)
+        )
+    }
+    //</enlight>-->
+    
 }
